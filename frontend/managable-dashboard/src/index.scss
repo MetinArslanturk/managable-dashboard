@@ -1,1 +1,34 @@
-@import "~bootstrap/scss/bootstrap";
+@import '~bootstrap/scss/bootstrap';
+
+.navbar {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  margin-top: 10px;
+  min-height: 80vh;
+}
+
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.horizontal-center-flex {
+  display: flex;
+  justify-content: center;
+}
+
+.footer {
+  margin-top: 10px;
+  height: 50px;
+}
