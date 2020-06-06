@@ -3,10 +3,14 @@ import {
   createStore,
   combineReducers,
   applyMiddleware,
-  compose,
+  compose
 } from 'redux';
-import thunk from 'redux-thunk';
+import createSagaMiddleware from 'redux-saga';
+import rootSaga from '../sagas/sagas';
 import authReducer from '../reducers/auth';
+import gridlayoutReducer from '../reducers/gridlayout';
+
+const sagaMiddleware = createSagaMiddleware();
 
 const composeEnhancers =
   window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -15,9 +19,12 @@ const storeCreator = () => {
   const store = createStore(
     combineReducers({
       auth: authReducer,
+      gridlayout: gridlayoutReducer
     }),
-    composeEnhancers(applyMiddleware(thunk)),
+    composeEnhancers(applyMiddleware(sagaMiddleware))
   );
+
+  sagaMiddleware.run(rootSaga);
 
   return store;
 };

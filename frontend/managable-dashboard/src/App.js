@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Container } from 'react-bootstrap';
+import { connect } from 'react-redux';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import MainContent from './components/layout/MainContent';
 
-const App = () => {
+const App = ({ setInitialLayout }) => {
+  useEffect(() => {
+    setInitialLayout();
+  }, [setInitialLayout]);
+
   return (
     <Container fluid="xl">
       <div className="main-container">
@@ -16,4 +21,8 @@ const App = () => {
   );
 };
 
-export default App;
+const mapDispatchToProps = (dispatch) => ({
+  setInitialLayout: () => dispatch({ type: 'INIT_LAYOUT' })
+});
+
+export default connect(undefined, mapDispatchToProps)(App);

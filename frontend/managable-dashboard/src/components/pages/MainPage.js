@@ -1,7 +1,13 @@
 import React from 'react';
+import GridDashboard from '../common-components/GridDashboard';
 
 const MainPage = () => {
-  return <>Main is here</>;
+  return (
+    <>
+      <div>Main</div>
+      <GridDashboard />
+    </>
+  );
 };
 
 export default MainPage;
