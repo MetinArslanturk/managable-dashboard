@@ -17,8 +17,12 @@ function mockApiCall(payload) {
 }
 function* updateLayout(action) {
   try {
+    // Don't cause re-render on grid
+    yield put({
+      type: 'LAYOUT_UPDATED',
+      layoutItems: action.newLayout
+    });
     const response = yield call(mockApiCall, action.newLayout);
-    // console.log(response);
     //    yield put({type: "USER_FETCH_SUCCEEDED", user: user});
   } catch (e) {
     // yield put({ type: 'USER_FETCH_FAILED', message: e.message });

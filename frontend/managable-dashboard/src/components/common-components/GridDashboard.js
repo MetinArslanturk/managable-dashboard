@@ -2,9 +2,10 @@ import React, { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
 import GridLayout from 'react-grid-layout';
 import { updateLayout, addNewItem } from '../../actions/gridlayout';
+import createElement from '../../helpers/elementCreator';
 
 const GridDashboard = ({
-  layoutItems,
+  gridLayout,
   updateLayoutAction,
   addNewItemAction
 }) => {
@@ -21,13 +22,11 @@ const GridDashboard = ({
     [isFirstInitCompleted, updateLayoutAction]
   );
 
-  const createItem = (element) => {
-    return <div key={element.i}>{element.i}</div>;
-  };
+  console.log('Re-render');
 
   const addItem = () => {
     addNewItemAction({
-      i: `${Date.now()}-ch-${layoutItems.length + 1}`,
+      i: `${Date.now()}-ch-${gridLayout.layoutItems.length + 1}`,
       x: 5,
       y: 0,
       w: 1,
@@ -42,21 +41,23 @@ const GridDashboard = ({
       </button>
       <GridLayout
         className="layout"
-        layout={layoutItems}
+        layout={gridLayout.layoutItems}
         cols={12}
         rowHeight={30}
         compactType={null}
         width={1200}
         onLayoutChange={layoutChangeHandler}
       >
-        {layoutItems.map((element) => createItem(element))}
+        {gridLayout.layoutItems.map((element) =>
+          createElement(element)
+        )}
       </GridLayout>
     </>
   );
 };
 
 const mapStateToProps = (state) => ({
-  layoutItems: state.gridlayout.layoutItems
+  gridLayout: state.gridlayout.layout
 });
 
 const mapDispatchToProps = (dispatch) => ({
