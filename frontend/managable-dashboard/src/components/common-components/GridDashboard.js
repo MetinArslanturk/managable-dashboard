@@ -1,13 +1,18 @@
 import React, { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
 import GridLayout from 'react-grid-layout';
-import { updateLayout, addNewItem } from '../../actions/gridlayout';
+import {
+  updateLayout,
+  addNewItem,
+  removeItem
+} from '../../actions/gridlayout';
 import createElement from '../../helpers/elementCreator';
 
 const GridDashboard = ({
   gridLayout,
   updateLayoutAction,
-  addNewItemAction
+  addNewItemAction,
+  removeItemAction
 }) => {
   const [isFirstInitCompleted, setFirstInit] = useState(false);
 
@@ -16,13 +21,11 @@ const GridDashboard = ({
       if (!isFirstInitCompleted) {
         setFirstInit(true);
       } else {
-        updateLayoutAction(newLayout);
+        updateLayoutAction(gridLayout.layoutId, newLayout);
       }
     },
-    [isFirstInitCompleted, updateLayoutAction]
+    [gridLayout.layoutId, isFirstInitCompleted, updateLayoutAction]
   );
-
-  console.log('Re-render');
 
   const addItem = () => {
     addNewItemAction({
@@ -32,6 +35,10 @@ const GridDashboard = ({
       w: 1,
       h: 2
     });
+  };
+
+  const removeItemHandler = (i) => {
+    removeItemAction(i);
   };
 
   return (
@@ -49,7 +56,7 @@ const GridDashboard = ({
         onLayoutChange={layoutChangeHandler}
       >
         {gridLayout.layoutItems.map((element) =>
-          createElement(element)
+          createElement(element, removeItemHandler)
         )}
       </GridLayout>
     </>
@@ -61,9 +68,10 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  updateLayoutAction: (newLayout) =>
-    dispatch(updateLayout(newLayout)),
-  addNewItemAction: (newItem) => dispatch(addNewItem(newItem))
+  updateLayoutAction: (layoutId, newLayout) =>
+    dispatch(updateLayout(layoutId, newLayout)),
+  addNewItemAction: (newItem) => dispatch(addNewItem(newItem)),
+  removeItemAction: (i) => dispatch(removeItem(i))
 });
 
 export default connect(

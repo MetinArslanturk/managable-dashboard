@@ -1,14 +1,21 @@
-export const updateLayout = (newLayout = []) => ({
+export const updateLayout = (layoutId, newLayout = []) => ({
   type: 'UPDATE_LAYOUT',
-  newLayout
+  newLayout,
+  layoutId
 });
 
-export const setLayout = (layoutItems = []) => ({
+export const setLayout = (layoutId = '', layoutItems = []) => ({
   type: 'SET_LAYOUT',
-  layoutItems
+  layoutItems,
+  layoutId
 });
 
 export const addNewItem = (newItem) => ({
   type: 'ADD_NEW_ITEM',
   newItem
+});
+
+export const removeItem = (i) => ({
+  type: 'REMOVE_ITEM',
+  i
 });

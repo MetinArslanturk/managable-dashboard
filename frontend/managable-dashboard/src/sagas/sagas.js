@@ -7,14 +7,8 @@ import {
   take
 } from 'redux-saga/effects';
 import { setLayout } from '../actions/gridlayout';
+import * as layoutService from '../services/layout';
 
-function mockApiCall(payload) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(payload);
-    }, 1000);
-  });
-}
 function* updateLayout(action) {
   try {
     // Don't cause re-render on grid
@@ -22,8 +16,11 @@ function* updateLayout(action) {
       type: 'LAYOUT_UPDATED',
       layoutItems: action.newLayout
     });
-    const response = yield call(mockApiCall, action.newLayout);
-    //    yield put({type: "USER_FETCH_SUCCEEDED", user: user});
+    yield call(layoutService.updateLayout, {
+      layoutId: action.layoutId,
+      items: action.newLayout
+    });
+    yield put({ type: 'LAYOUT_UPDATE_SYNC_SUCCESS' });
   } catch (e) {
     // yield put({ type: 'USER_FETCH_FAILED', message: e.message });
   }
@@ -33,12 +30,13 @@ function* initLayout() {
   try {
     while (true) {
       const action = yield take('INIT_LAYOUT');
-      const payload = yield call(mockApiCall, [
-        { i: 'a', x: 0, y: 0, w: 1, h: 2 },
-        { i: 'b', x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4 },
-        { i: 'c', x: 4, y: 0, w: 1, h: 2 }
-      ]);
-      yield put(setLayout(payload));
+      const response = yield call(
+        layoutService.getLayoutOfUser,
+        action.userId
+      );
+      if (response.data && response.data.items) {
+        yield put(setLayout(response.data._id, response.data.items));
+      }
     }
   } catch (e) {
     // yield put({ type: 'USER_FETCH_FAILED', message: e.message });

@@ -22,7 +22,11 @@ const App = ({ setInitialLayout }) => {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  setInitialLayout: () => dispatch({ type: 'INIT_LAYOUT' })
+  setInitialLayout: () =>
+    dispatch({
+      type: 'INIT_LAYOUT',
+      userId: '5edccdbdcf585f3f4044a363'
+    })
 });
 
 export default connect(undefined, mapDispatchToProps)(App);

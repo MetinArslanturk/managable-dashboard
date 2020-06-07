@@ -1,5 +1,5 @@
 const gridLayoutDefaultState = {
-  layout: { layoutItems: [] }
+  layout: { layoutId: '', layoutItems: [] }
 };
 
 export default (state = gridLayoutDefaultState, action) => {
@@ -7,7 +7,11 @@ export default (state = gridLayoutDefaultState, action) => {
     case 'SET_LAYOUT':
       return {
         ...state,
-        layout: { ...state.layout, layoutItems: action.layoutItems }
+        layout: {
+          ...state.layout,
+          layoutId: action.layoutId,
+          layoutItems: action.layoutItems
+        }
       };
     // This case does not cause re-render in GridDashboard (which takes 'layout' to prevent unnecessary re-renders)
     case 'LAYOUT_UPDATED':
@@ -24,12 +28,15 @@ export default (state = gridLayoutDefaultState, action) => {
           layoutItems: [...state.layout.layoutItems, action.newItem]
         }
       };
-    case 'DELETE_ITEM':
+    case 'REMOVE_ITEM':
       return {
         ...state,
-        layoutItems: state.layoutItems.filter(
-          (item) => item.i !== action.key
-        )
+        layout: {
+          ...state.layout,
+          layoutItems: state.layout.layoutItems.filter(
+            (item) => item.i !== action.i
+          )
+        }
       };
     default:
       return state;
