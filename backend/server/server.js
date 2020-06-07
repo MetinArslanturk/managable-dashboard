@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 
 const { mongoose } = require('./db/mongoose');
 const { User } = require('./models/user');
+const { Layout } = require('./models/layout');
 
 const { authenticate } = require('./middleware/authenticate');
 const { authenticateAsAdmin } = require('./middleware/authenticate-as-admin');
@@ -161,6 +162,51 @@ app.get(apiBase + 'checkLogin', (req, res) => {
     }).catch((e) => {
         res.status(200).send({ caut: false });
         return;
+    });
+});
+
+///////////////////////////////////////////////////////////////////////
+
+// ---------------------- LAYOUT OPERATIONS ---------------------- //
+
+///////////////////////////////////////////////////////////////////////
+
+app.post(apiBase + 'layouts', (req, res) => {
+    const layout = new Layout({
+        user: req.body.userId,
+        items: req.body.items
+    });
+    layout.save().then((doc) => {
+        res.send(doc);
+    }, (e) => {
+        res.status(400).send(e);
+    });
+});
+
+app.patch(apiBase + 'layouts', async (req, res) => {
+    const id = req.body.layoutId;
+    try {
+      const layout = await Layout.findOne({ _id: id });
+      layout.items = req.body.items;
+      const updatedLayout = await layout.save();
+      res.send(updatedLayout);
+    } catch (err) {
+        res.status(500).send(err);
+    }
+});
+
+app.get(apiBase + 'layouts/user/:id', (req, res) => {
+
+    Layout.findOne({
+        user: req.params.id
+    }).then((layout) => {
+        if (layout) {
+            res.send(layout);
+        } else {
+            res.status(400).send('Could not find the layout of user.');
+        }
+    }, (err) => {
+        res.status(500).send(err);
     });
 });
 
