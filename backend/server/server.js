@@ -90,6 +90,21 @@ app.post(apiBase + 'users', authenticateAsAdmin, (req, res) => {
 });
 
 
+app.get(apiBase + 'users/students', (req, res) => {
+    User.find({
+        isTeacher: false,
+        isAdmin: false
+    }).then((users) => {
+        if (users) {
+            res.send(users);
+        } else {
+            res.status(400).send('Could not find the user.');
+        }
+    }, (err) => {
+        res.status(500).send(err);
+    });
+});
+
 
 app.get(apiBase + 'users/:id', authenticateAsAdmin, (req, res) => {
     User.findOne({
@@ -104,6 +119,8 @@ app.get(apiBase + 'users/:id', authenticateAsAdmin, (req, res) => {
         res.status(500).send(err);
     });
 });
+
+
 
 app.post(apiBase + 'users/updateMyProfile', authenticate, (req, res) => {
     const userId = req.user._id;
@@ -130,7 +147,7 @@ app.post(apiBase + 'login', (req, res) => {
     User.findByCredentials(body.email, body.password).then((user) => {
         return user.generateAuthToken().then((token) => {
             res.cookie('sessionCid', token, { maxAge: 86400000, httpOnly: true });
-            res.status(200).send({ isA: user.isAdmin, name: user.name, _id: user._id, email: user.email });
+            res.status(200).send({ isA: user.isAdmin, isTeacher:user.isTeacher, name: user.name, _id: user._id, email: user.email });
         });
     }).catch((e) => {
         res.status(403).send();
@@ -206,25 +223,32 @@ app.patch(apiBase + 'layouts', async (req, res) => {
         res.status(404).send(err);
       }
     } catch (err) {
-        console.log(err);
         res.status(500).send(err);
     }
 });
 
-app.get(apiBase + 'layouts/user/:id', async (req, res) => {
-    try {
-        const layout = await Layout.findOne({
-            user: req.params.id
+app.get(apiBase + "layouts/user/:id", async (req, res) => {
+  try {
+    const layout = await Layout.findOne({
+      user: req.params.id,
+    });
+
+    if (layout) {
+      res.send(layout);
+    } else {
+      const user = await User.findOne({ _id: req.params.id });
+      if (user) {
+        const layout = new Layout({
+          user: user._id,
+          items: [],
         });
-    
-        if (layout) {
-            res.send(layout);
-        } else {
-            res.status(400).send('Could not find the layout of user.');
-        }
-    } catch (err) {
-        res.status(500).send(err);
+        const newLayout = await layout.save();
+        res.send(newLayout);
+      }
     }
+  } catch (err) {
+    res.status(500).send(err);
+  }
 });
 
 ///////////////////////////////////////////////////////////////////////
