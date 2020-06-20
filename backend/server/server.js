@@ -9,6 +9,9 @@ const bodyParser = require('body-parser');
 const { mongoose } = require('./db/mongoose');
 const { User } = require('./models/user');
 const { Layout } = require('./models/layout');
+const { Course } = require('./models/course');
+const { StudentsCourses } = require('./models/relations/studentscourses');
+
 
 const { authenticate } = require('./middleware/authenticate');
 const { authenticateAsAdmin } = require('./middleware/authenticate-as-admin');
@@ -29,6 +32,7 @@ app.get(apiBase + 'addadmin', (req, res) => {
         email: 'admin@test.com',
         password: '123456',
         isAdmin: true,
+        isTeacher: true,
         name: 'admin'
     });
 
@@ -187,27 +191,127 @@ app.patch(apiBase + 'layouts', async (req, res) => {
     const id = req.body.layoutId;
     try {
       const layout = await Layout.findOne({ _id: id });
-      layout.items = req.body.items;
-      const updatedLayout = await layout.save();
-      res.send(updatedLayout);
+      if (layout) {
+          if (req.body.items) {
+            layout.items = req.body.items;
+          }
+
+          if (req.body.canAdd) {
+              layout.canAdd = req.body.canAdd
+          }
+        
+        const updatedLayout = await layout.updateOne(layout);
+        res.send(updatedLayout);
+      } else {
+        res.status(404).send(err);
+      }
     } catch (err) {
+        console.log(err);
         res.status(500).send(err);
     }
 });
 
-app.get(apiBase + 'layouts/user/:id', (req, res) => {
-
-    Layout.findOne({
-        user: req.params.id
-    }).then((layout) => {
+app.get(apiBase + 'layouts/user/:id', async (req, res) => {
+    try {
+        const layout = await Layout.findOne({
+            user: req.params.id
+        });
+    
         if (layout) {
             res.send(layout);
         } else {
             res.status(400).send('Could not find the layout of user.');
         }
-    }, (err) => {
+    } catch (err) {
         res.status(500).send(err);
-    });
+    }
+});
+
+///////////////////////////////////////////////////////////////////////
+
+// ---------------------- COURSE OPERATIONS ---------------------- //
+
+///////////////////////////////////////////////////////////////////////
+
+app.post(apiBase + 'course/addcourse', async (req, res) => {
+    try {
+        const {owner, name, code} = req.body;
+
+        const course = new Course({
+            owner,
+            code,
+            name
+        });
+
+        const savedCourse = await course.save();
+        res.send(savedCourse);
+    } catch (err) {
+        res.status(500).send(err);
+    }
+});
+
+app.post(apiBase + 'course/addstudent', async (req, res) => {
+    try {
+        const {student, course} = req.body;
+
+        const studentsCourses = new StudentsCourses({
+            student,
+            course
+        });
+
+        const savedCourse = await studentsCourses.save();
+        res.send(savedCourse);
+    } catch (err) {
+        res.status(500).send(err);
+    }
+});
+
+app.get(apiBase + 'course/myown/:id', async (req, res) => {
+    try {
+        const courses = await Course.find({
+            owner: req.params.id
+        });
+    
+        if (courses.length > 0) {
+            res.send(courses);
+        } else {
+            res.status(400).send('Could not find the course of user.');
+        }
+    } catch (err) {
+        res.status(500).send(err);
+    }
+});
+
+app.get(apiBase + 'course/my/:id', async (req, res) => {
+    try {
+        const studentsCourses = await StudentsCourses.find({
+            student: req.params.id
+        }).populate('course');
+    
+        if (studentsCourses.length > 0) {
+            res.send(studentsCourses);
+        } else {
+            res.status(400).send('Could not find the course of user.');
+        }
+    } catch (err) {
+        res.status(500).send(err);
+    }
+});
+
+app.get(apiBase + 'course/students/:courseId', async (req, res) => {
+    try {
+        const studentsCourses = await StudentsCourses.find({
+            course: req.params.courseId
+        }).populate('student', 'email name');
+    
+        if (studentsCourses.length > 0) {
+            res.send(studentsCourses);
+        } else {
+            res.status(400).send('Could not find the course of user.');
+        }
+    } catch (err) {
+        res.status(500).send(err);
+    }
 });
 
 

@@ -12,10 +12,16 @@ var GridItemSchema = new mongoose.Schema({
     required: true
   },
   isDraggable: {
-    type: Boolean
+    type: Boolean,
+    default: true
   },
   isResizable: {
-    type: Boolean
+    type: Boolean,
+    default: true
+  },
+  canRemove: {
+    type: Boolean,
+    default: true
   },
   maxH: {
     type: Number
@@ -44,16 +50,12 @@ var GridItemSchema = new mongoose.Schema({
   y: {
     type: Number,
     default: 3
+  },
+  type: {
+    type: String,
+    required: true
   }
 });
-
-
-GridItemSchema.methods.toJSON = function () {
-  const gridItem = this;
-  const gridItemObject = gridItem.toObject();
-  return _.pick(gridItemObject, ['_id', 'name', 'description', 'category', 'rate', 'price', 'stock', 'imageUrl', 'createdAt', 'key']);
-};
-
 
 
 module.exports = {GridItemSchema}

@@ -35,6 +35,10 @@ var UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  courses: {
+    type: [String],
+    default: []
+  },
   token: {
     type: String,
     default: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
@@ -53,7 +57,7 @@ UserSchema.set('toObject', {
 UserSchema.methods.toJSON = function () {
   var user = this;
   var userObject = user.toObject();
-  return _.pick(userObject, ['_id', 'name', 'email', 'isAdmin', 'isTeacher', 'key']);
+  return _.pick(userObject, ['_id', 'name', 'email', 'isAdmin', 'isTeacher', 'courses', 'key']);
 };
 
 
