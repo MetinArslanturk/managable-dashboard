@@ -9,22 +9,25 @@ import {
 } from 'redux-saga/effects';
 import { setLayout } from '../actions/gridlayout';
 import * as layoutService from '../services/layout';
+import * as authService from '../services/auth';
 
 const getItems = (state) => state.gridlayout.layout.layoutItems;
 
 function* updateLayout(action) {
   try {
     // Don't cause re-render on grid
-    yield put({
-      type: 'LAYOUT_UPDATED',
-      layoutItems: action.newLayout
-    });
-    const newItems = yield select(getItems);
-    yield call(layoutService.updateLayout, {
-      layoutId: action.layoutId,
-      items: newItems
-    });
-    yield put({ type: 'LAYOUT_UPDATE_SYNC_SUCCESS' });
+    if (action.layoutId) {
+      yield put({
+        type: 'LAYOUT_UPDATED',
+        layoutItems: action.newLayout
+      });
+      const newItems = yield select(getItems);
+      yield call(layoutService.updateLayout, {
+        layoutId: action.layoutId,
+        items: newItems
+      });
+      yield put({ type: 'LAYOUT_UPDATE_SYNC_SUCCESS' });
+    }
   } catch (e) {
     // yield put({ type: 'USER_FETCH_FAILED', message: e.message });
   }
@@ -41,6 +44,15 @@ function* updateCanAdd(action) {
       canAdd: action.canAdd
     });
     yield put({ type: 'LAYOUT_UPDATE_SYNC_SUCCESS' });
+  } catch (e) {
+    // yield put({ type: 'USER_FETCH_FAILED', message: e.message });
+  }
+}
+
+function* startLogin(action) {
+  try {
+    const response = yield call(authService.login, action.payload);
+    yield put({ type: 'SET_LOGGED_IN', user: response.data });
   } catch (e) {
     // yield put({ type: 'USER_FETCH_FAILED', message: e.message });
   }
@@ -73,6 +85,7 @@ export default function* rootSaga() {
   yield all([
     takeLatest('UPDATE_LAYOUT', updateLayout),
     takeLatest('UPDATE_CAN_ADD', updateCanAdd),
+    takeLatest('START_LOGIN', startLogin),
     fork(initLayout)
   ]);
 }

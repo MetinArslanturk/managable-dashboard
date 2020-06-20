@@ -18,7 +18,8 @@ export default (element, editType, removeHandler, modalHandler) => {
             X
           </Button>
         )}
-        {editType === 'teacherStudent' && (
+        {(editType === 'teacherStudent' ||
+          editType === 'teacherOwn') && (
           <Button
             variant="light"
             onClick={() => {

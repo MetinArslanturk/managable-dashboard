@@ -1,7 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table, Form, Button } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
+import { students } from '../../services/auth';
+import { history, baseHref } from '../../configs/config';
 
 const StudentList = () => {
+  const dispatch = useDispatch();
+  const [allStudents, setStudents] = useState([]);
+  useEffect(() => {
+    students().then((res) => {
+      setStudents(res.data);
+    });
+  }, [setStudents]);
+
+  const goStudentDashboard = (id) => {
+    history.push(`${baseHref}manage-dash/${id}`);
+  };
   return (
     <>
       <div className="grid-actions">
@@ -23,29 +37,31 @@ const StudentList = () => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>
-              <Button onClick={undefined} variant="primary">
-                Dashboard
-              </Button>
-              <Button
-                className="share-button"
-                onClick={undefined}
-                variant="success"
-              >
-                Move Settings
-              </Button>
-            </td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-          </tr>
+          {allStudents.map((student, indice) => (
+            <tr key={student._id}>
+              <td>{indice + 1}</td>
+              <td>{student.name}</td>
+              <td>{student.email}</td>
+              <td>
+                <Button
+                  onClick={() => {
+                    dispatch({ type: 'SET_EMPTY_LAYOUT' });
+                    goStudentDashboard(student._id);
+                  }}
+                  variant="primary"
+                >
+                  Dashboard
+                </Button>
+                <Button
+                  className="share-button"
+                  onClick={undefined}
+                  variant="success"
+                >
+                  Move Settings
+                </Button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </Table>
     </>

@@ -14,6 +14,10 @@ export default (state = gridLayoutDefaultState, action) => {
           canAdd: action.canAdd
         }
       };
+    case 'SET_EMPTY_LAYOUT':
+      return {
+        ...gridLayoutDefaultState
+      };
     // This case does not cause re-render in GridDashboard (which takes 'layout' to prevent unnecessary re-renders)
     case 'LAYOUT_UPDATED':
       action.layoutItems.forEach((item) => {

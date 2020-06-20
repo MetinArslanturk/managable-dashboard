@@ -1,21 +1,20 @@
 /* eslint-disable no-nested-ternary */
-import React, { useState } from 'react';
+import React from 'react';
+import { connect } from 'react-redux';
 import GridDashboard from '../common-components/GridDashboard';
 
-const MainPage = () => {
-  const [dashboardType, setDashboarType] = useState('teacherStudent');
-
+const MainPage = ({ isTa, userId }) => {
+  const dashboardType = isTa ? 'teacherOwn' : 'studentOwn';
   return (
     <>
-      {dashboardType === 'teacherOwn' ? (
-        <GridDashboard editType="teacherOwn" />
-      ) : dashboardType === 'teacherStudent' ? (
-        <GridDashboard editType="teacherStudent" />
-      ) : (
-        <GridDashboard editType="studentOwn" />
-      )}
+      <GridDashboard userId={userId} editType={dashboardType} />
     </>
   );
 };
 
-export default MainPage;
+const mapStateToProps = (state) => ({
+  userId: state.auth.user._id,
+  isTa: !!state.auth.user.isTeacher
+});
+
+export default connect(mapStateToProps)(MainPage);

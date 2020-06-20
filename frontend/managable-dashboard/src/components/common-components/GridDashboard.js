@@ -21,6 +21,8 @@ const GridDashboard = ({
   removeItemAction,
   updateSingleItemAction,
   editType,
+  userId,
+  setInitialLayout,
   updateCanAddAction
 }) => {
   const [isFirstInitCompleted, setFirstInit] = useState(false);
@@ -32,6 +34,12 @@ const GridDashboard = ({
     setShowAddPermissionModal
   ] = useState(false);
   const [canAddList, setCanAddList] = useState([]);
+
+  useEffect(() => {
+    console.log('Fetched');
+    setInitialLayout(userId);
+  }, [setInitialLayout, userId]);
+
   const layoutChangeHandler = useCallback(
     (newLayout) => {
       if (isFirstInitCompleted) {
@@ -202,7 +210,12 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(updateCanAdd(layoutId, canAdd)),
   removeItemAction: (i) => dispatch(removeItem(i)),
   updateSingleItemAction: (newItem) =>
-    dispatch(updateSingleItem(newItem))
+    dispatch(updateSingleItem(newItem)),
+  setInitialLayout: (userId) =>
+    dispatch({
+      type: 'INIT_LAYOUT',
+      userId
+    })
 });
 
 export default connect(
