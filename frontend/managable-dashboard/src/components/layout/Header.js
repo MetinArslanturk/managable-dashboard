@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navbar } from 'react-bootstrap';
+import { Navbar, Button } from 'react-bootstrap';
 
 const Header = () => {
   return (
@@ -8,7 +8,10 @@ const Header = () => {
       <Navbar.Toggle />
       <Navbar.Collapse className="justify-content-end">
         <Navbar.Text>
-          Signed in - as: <a href="#login">Mark Otto</a>
+          <Button variant="dark">Students</Button>
+        </Navbar.Text>
+        <Navbar.Text className="signed-text">
+          Signed in as: Mark
         </Navbar.Text>
       </Navbar.Collapse>
     </Navbar>

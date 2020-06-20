@@ -34,9 +34,71 @@
 }
 
 .react-grid-layout {
-  background-color: #eee;
+  background-color: #fbfbfb;
 }
 
 .react-grid-item {
-  border: 1px solid #ccc;
+  border: 1px dashed #ccc;
+  overflow: hidden;
+}
+
+.grid-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 5px;
+}
+
+.course-select {
+  width: 150px;
+  margin-right: 3px;
+}
+
+.share-button,
+.signed-text {
+  margin-left: 5px;
+}
+
+.add-item-button {
+  margin-left: 5px;
+}
+
+.progress-wrapper {
+  text-align: center;
+  padding: 15px;
+}
+
+.item-buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.inside-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.badge-item {
+  font-size: 80px;
+  color: #a7418c;
+}
+
+.align-center {
+  text-align: center;
+}
+
+.point-text-item {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+
+  .points {
+    font-size: 45px;
+    color: rgb(28, 143, 66);
+  }
+
+  .points-label {
+    font-size: 35px;
+    color: #000;
+  }
 }

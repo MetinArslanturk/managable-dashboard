@@ -1,11 +1,19 @@
-import React from 'react';
+/* eslint-disable no-nested-ternary */
+import React, { useState } from 'react';
 import GridDashboard from '../common-components/GridDashboard';
 
 const MainPage = () => {
+  const [dashboardType, setDashboarType] = useState('teacherStudent');
+
   return (
     <>
-      <div>Main</div>
-      <GridDashboard />
+      {dashboardType === 'teacherOwn' ? (
+        <GridDashboard editType="teacherOwn" />
+      ) : dashboardType === 'teacherStudent' ? (
+        <GridDashboard editType="teacherStudent" />
+      ) : (
+        <GridDashboard editType="studentOwn" />
+      )}
     </>
   );
 };
