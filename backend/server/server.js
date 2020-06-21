@@ -178,7 +178,7 @@ app.get(apiBase + 'checkLogin', (req, res) => {
             res.status(200).send({ caut: false });
             return;
         }
-        res.status(200).send({ caut: true, isA: user.isAdmin, name: user.name, _id: user._id, email: user.email });
+        res.status(200).send({ caut: true, isA: user.isAdmin, isTeacher:user.isTeacher, name: user.name, _id: user._id, email: user.email });
         return;
     }).catch((e) => {
         res.status(200).send({ caut: false });
@@ -202,6 +202,42 @@ app.post(apiBase + 'layouts', (req, res) => {
     }, (e) => {
         res.status(400).send(e);
     });
+});
+
+app.post(apiBase + "share", async (req, res) => {
+  try {
+    const sourceLayout = await Layout.findOne({
+      user: req.body.source,
+    });
+
+    const targetUsers = req.body.target;
+
+    for (let target of targetUsers) {
+      const layout = await Layout.findOne({
+        user: target,
+      });
+
+      if (layout) {
+        layout.items = sourceLayout.items;
+        layout.canAdd = sourceLayout.canAdd;
+        await layout.updateOne(layout);
+      } else {
+        const user = await User.findOne({ _id: req.params.id });
+        if (user) {
+          const layout = new Layout({
+            user: user._id,
+            items: sourceLayout.items,
+            canAdd: sourceLayout.canAdd,
+          });
+          await layout.save();
+        }
+      }
+    }
+
+    res.send("Success");
+  } catch (err) {
+    res.status(500).send(err);
+  }
 });
 
 app.patch(apiBase + 'layouts', async (req, res) => {
