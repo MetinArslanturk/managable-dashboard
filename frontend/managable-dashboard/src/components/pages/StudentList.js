@@ -3,10 +3,29 @@ import { Table, Form, Button } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { students } from '../../services/auth';
 import { history, baseHref } from '../../configs/config';
+import ShareSettingsModal from '../../helpers/modals/ShareSettingsModal';
 
 const StudentList = () => {
   const dispatch = useDispatch();
   const [allStudents, setStudents] = useState([]);
+  const [
+    showShareSettingsModal,
+    setShowShareSettingsModal
+  ] = useState(false);
+
+  const [shareSource, setShareSource] = useState({});
+
+  const handleShareSettingsModalClose = () =>
+    setShowShareSettingsModal(false);
+
+  const handleShareSettingsModalSave = (val) => {
+    dispatch({
+      type: 'SHARE_SETTINGS',
+      source: shareSource._id,
+      target: val
+    });
+    setShowShareSettingsModal(false);
+  };
   useEffect(() => {
     students().then((res) => {
       setStudents(res.data);
@@ -15,6 +34,11 @@ const StudentList = () => {
 
   const goStudentDashboard = (id) => {
     history.push(`${baseHref}manage-dash/${id}`);
+  };
+
+  const handleShareClick = (student) => {
+    setShareSource(student);
+    setShowShareSettingsModal(true);
   };
   return (
     <>
@@ -54,7 +78,7 @@ const StudentList = () => {
                 </Button>
                 <Button
                   className="share-button"
-                  onClick={undefined}
+                  onClick={() => handleShareClick(student)}
                   variant="success"
                 >
                   Move Settings
@@ -64,6 +88,14 @@ const StudentList = () => {
           ))}
         </tbody>
       </Table>
+
+      <ShareSettingsModal
+        showShareSettingsModal={showShareSettingsModal}
+        handleShareSettingsModalClose={handleShareSettingsModalClose}
+        handleShareSettingsModalSave={handleShareSettingsModalSave}
+        sourceStudent={shareSource}
+        studentList={allStudents}
+      />
     </>
   );
 };

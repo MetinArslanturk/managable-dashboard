@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { baseHref } from '../../configs/config';
 import { logout } from '../../actions/auth';
 
-const Header = ({ isAuth, name, logoutAction }) => {
+const Header = ({ isAuth, isTeacher, name, logoutAction }) => {
   return (
     <Navbar bg="dark" variant="dark">
       <Navbar.Brand>
@@ -13,14 +13,18 @@ const Header = ({ isAuth, name, logoutAction }) => {
       </Navbar.Brand>
       <Navbar.Toggle />
       <Navbar.Collapse className="justify-content-end">
-        <Navbar.Text>
-          <Link to={`${baseHref}manage/students`}>Students</Link>
-        </Navbar.Text>
         {isAuth ? (
           <>
             <Navbar.Text className="signed-text">
               Welcome, {name}
             </Navbar.Text>
+            {isTeacher && (
+              <Navbar.Text style={{ marginLeft: '5px' }}>
+                <Link to={`${baseHref}manage/students`}>
+                  Students
+                </Link>
+              </Navbar.Text>
+            )}
             <Navbar.Text>
               <Button variant="link" onClick={logoutAction}>
                 Logout

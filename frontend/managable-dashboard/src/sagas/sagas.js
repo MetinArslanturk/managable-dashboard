@@ -58,6 +58,28 @@ function* startLogin(action) {
   }
 }
 
+function* shareSettings(action) {
+  try {
+    yield call(authService.shareSettings, {
+      target: action.target,
+      source: action.source
+    });
+  } catch (e) {
+    // yield put({ type: 'USER_FETCH_FAILED', message: e.message });
+  }
+}
+
+function* checkLogin() {
+  try {
+    const response = yield call(authService.checkLogin);
+    if (response.data.caut) {
+      yield put({ type: 'SET_LOGGED_IN', user: response.data });
+    }
+  } catch (e) {
+    // yield put({ type: 'USER_FETCH_FAILED', message: e.message });
+  }
+}
+
 function* initLayout() {
   try {
     while (true) {
@@ -86,6 +108,8 @@ export default function* rootSaga() {
     takeLatest('UPDATE_LAYOUT', updateLayout),
     takeLatest('UPDATE_CAN_ADD', updateCanAdd),
     takeLatest('START_LOGIN', startLogin),
+    takeLatest('CHECK_LOGIN', checkLogin),
+    takeLatest('SHARE_SETTINGS', shareSettings),
     fork(initLayout)
   ]);
 }
