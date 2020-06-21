@@ -27,13 +27,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 /* Will be removed start */
 
-app.get(apiBase + 'addadmin', (req, res) => {
+app.get(apiBase + 'addteacher', (req, res) => {
     const user = new User({
-        email: 'admin@test.com',
+        email: 'teacher@test.com',
         password: '123456',
         isAdmin: true,
         isTeacher: true,
-        name: 'admin'
+        name: 'Teacher'
     });
 
     user.save().then((doc) => {
@@ -43,19 +43,24 @@ app.get(apiBase + 'addadmin', (req, res) => {
     });
 });
 
-app.get(apiBase + 'addtest', (req, res) => {
-    const user = new User({
-        email: 'testn@test.com',
-        password: '123456',
+app.get(apiBase + "addstudents", async (req, res) => {
+  try {
+    for (let i = 0; i < 4; i++) {
+      const name = "user" + i;
+      const user = new User({
+        email: name + "@test.com",
+        password: "123456",
         isAdmin: false,
-        name: 'test'
-    });
+        isTeacher: false,
+        name,
+      });
 
-    user.save().then((doc) => {
-        res.send(doc);
-    }, (e) => {
-        res.status(400).send(e);
-    });
+      await user.save();
+    }
+    res.send("Success");
+  } catch (err) {
+    res.status(500).send(err);
+  }
 });
 
 app.get(apiBase + 'getinfo', (req, res) => {
